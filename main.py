@@ -88,3 +88,38 @@
 #     f = drive.CreateFile({'title': x})
 #     f.SetContentFile(os.path.join(path, x))
 #     f.Upload()
+
+
+from cryptography.fernet import Fernet
+def write_key():
+    """
+    Generates a key and save it into a file
+    """
+    key = Fernet.generate_key()
+    with open('key.txt', 'wb') as f:
+        f.write(key)
+
+def load_key():
+    with open('key.txt', 'rb') as f:
+        key = f.read()
+        return key
+
+def encrypt(filename, key):
+    f = Fernet(key)
+    with open(filename, 'rb') as og_file:
+        data = og_file.read()
+        encrypted = f.encrypt(data)
+    with open(filename, 'wb') as encrypted_file:
+        encrypted_file.write(encrypted)
+
+def decrypt(filename, key):
+    f = Fernet(key)
+    with open(filename, 'rb') as encrypted_file:
+        encrypted = encrypted_file.read()
+        decrypted = f.decrypt(encrypted)
+    with open(filename, 'wb') as decrypted_file:
+        decrypted_file.write(decrypted)
+
+if __name__ == '__main__':
+    file = "/Users/kareenaarora/Desktop/test.pdf"
+    decrypt(file, load_key())
